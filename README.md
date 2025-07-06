@@ -75,28 +75,37 @@ Folder layout (any depth):
      artefact filter: size, border-touch, extreme eccentricity, BF texture.
    
    
-5. Vector-ised feature extraction – per-label AO/EB sums via np.bincount; compute z-scores & AO/EB ratio.
-6. Adaptive thresholds
+4. Vector-ised feature extraction – per-label AO/EB sums via np.bincount; compute z-scores & AO/EB ratio.
+5. Adaptive thresholds
    
      EB split: Otsu on red-z of AO-positive pool → capped at max_r_z_thr.
    
      AO/EB ratio split: valley-finding + optional 2-component GMM inside EB-negatives.
    
    
-8. Gating logic
+6. Gating logic
    
-EB–  & g_z>g_z_early & ratio>mult        → Early
-EB–  otherwise                           → Live
-EB+  & (red-dom)                         → Necrotic
-EB+  & (small area)                      → Late
-EB+  otherwise                           → Necrotic
+      EB–  & g_z>g_z_early & ratio>mult        → Early
+
+      EB–  otherwise                           → Live
+
+      EB+  & (red-dom)                         → Necrotic
+
+      EB+  & (small area)                      → Late
+
+      EB+  otherwise                           → Necrotic
+
 
 10. Output
     
      summary.csv – per-field counts & percentages.
+    
      summary_cells.csv – per-nucleus metrics & class.
+    
      *.meta.json – full CLI + computed thresholds.
+    
      Optional PNG overlays & 16-bit masks under qc/.
+    
 
 
 # Example: treat-vs-control batch
