@@ -4,13 +4,19 @@ Automated, reproducible quantification of acridine-orange / ethidium-bromide (AO
 The script discovers paired green (AO) and red (EB) TIFFs, segments nuclei, classifies them into Live / Early Apoptosis / Late Apoptosis / Necrotic, and writes CSV summaries plus optional overlays & label masks.
 
 # Key features
-| ---------------------------------------------------------------------------------------------------------------------------------- |
+
 | **Dual-channel segmentation** – three modes (`green`, `union`, `fallback`) to cope with pure-red nuclei or failed AO staining.     |
+
 | **Vectorised statistics** – NumPy `bincount` makes v2.16 ≈4× faster & ≈40 % leaner than classic `regionprops` loops.               |
+
 | **Self-tuning thresholds** – multi-Otsu, auto valley-finding, and optional GMM maintain robust AO/EB splits without hand tweaking. |
+
 | **Safety-cap for EB split** – prevents red-only floods from wrecking the Live/Early balance (`--max_r_z_thr`, default 10).         |
+
 | **Rich QC output** – per-field overlays, 16-bit label masks, cell-level CSV, and a JSON meta-file for provenance.                  |
+
 | **Headless batch-ready** – runs equally well on workstations or HPC nodes; fully CLI-driven.                                       |
+
 
 # Requirements (Installation)
 pip install numpy scipy scikit-image scikit-learn tifffile joblib tqdm pandas
@@ -19,11 +25,17 @@ Python ≥ 3.9 and scikit-image ≥ 0.19 are supported
 
 # Usage 
 Folder layout (any depth):
+
 ├── field01_G.tif       # AO   (max-proj or single slice)
+
 ├── field01_R.tif       # EB
+
 ├── field01_BF.tif      # optional bright-field
+
 ├── field02_G.tif
+
 └── ...
+
 
 # All flags & options
 | Flag                 | Default       | Purpose                                                                    |
@@ -53,25 +65,39 @@ Folder layout (any depth):
 1. Discovery – walks input_dir, grouping by stem; accepts _G/_R/_BF and dash/numbered variants.
 2. Pre-processing – local background removal (white_tophat).
 3. Segmentation
+   
      multi-Otsu → binary mask
+   
      distance-transform & H-maxima seeding
+   
      watershed → preliminary labels
+   
      artefact filter: size, border-touch, extreme eccentricity, BF texture.
-4. Vector-ised feature extraction – per-label AO/EB sums via np.bincount; compute z-scores & AO/EB ratio.
-5. Adaptive thresholds
+   
+   
+5. Vector-ised feature extraction – per-label AO/EB sums via np.bincount; compute z-scores & AO/EB ratio.
+6. Adaptive thresholds
+   
      EB split: Otsu on red-z of AO-positive pool → capped at max_r_z_thr.
+   
      AO/EB ratio split: valley-finding + optional 2-component GMM inside EB-negatives.
-6. Gating logic
+   
+   
+8. Gating logic
+   
 EB–  & g_z>g_z_early & ratio>mult        → Early
 EB–  otherwise                           → Live
 EB+  & (red-dom)                         → Necrotic
 EB+  & (small area)                      → Late
 EB+  otherwise                           → Necrotic
-7. Output
+
+10. Output
+    
      summary.csv – per-field counts & percentages.
      summary_cells.csv – per-nucleus metrics & class.
      *.meta.json – full CLI + computed thresholds.
      Optional PNG overlays & 16-bit masks under qc/.
+
 
 # Example: treat-vs-control batch
 python ao_eb_batch_quant_v2.py \
