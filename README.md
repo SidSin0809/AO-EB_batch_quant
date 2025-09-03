@@ -127,5 +127,4 @@ python ao_eb_batch_quant_v2.py -i ./ -o results/summary.csv --overlay --masks --
 
 ## Citation
 If you use AO/EB Batch Quant in a publication, please cite this repository. Feel free to raise issues or pull requests—contributions are welcome!
-
-
+[![DOI](https://zenodo.org/badge/1014730994.svg)](https://doi.org/10.5281/zenodo.17038427)
